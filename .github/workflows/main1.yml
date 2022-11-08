@@ -1,7 +1,5 @@
 on: [push]
-
-name: GettingStarted_Container_Workflow
-
+name: GettingStarted_Container_Workflow02
 jobs:
     build-and-deploy:
         runs-on: ubuntu-latest
@@ -9,12 +7,10 @@ jobs:
         # checkout the repo
         - name: 'Checkout GitHub Action'
           uses: actions/checkout@main
-          
         - name: 'Login via Azure CLI'
           uses: azure/login@v1
           with:
             creds: ${{ secrets.AZURE_CREDENTIALS }}
-        
         - name: 'Build and push image'
           uses: azure/docker-login@v1
           with:
@@ -28,11 +24,15 @@ jobs:
           uses: 'azure/aci-deploy@v1'
           with:
             resource-group: ${{ secrets.RESOURCE_GROUP }}
-            dns-name-label: ${{ secrets.RESOURCE_GROUP }}
+            dns-name-label: ${{ secrets.DNS_NAME }}
             image: ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ secrets.REPOSITORY_NAME }}:${{ github.run_number }}
             registry-login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
             registry-username: ${{ secrets.REGISTRY_USERNAME }}
             registry-password: ${{ secrets.REGISTRY_PASSWORD }}
+            azure-file-volume-account-key: ${{ secrets.FILESHARE_ACCKEY }}
+            azure-file-volume-account-name: ${{ secrets.FILESHARE_ACCNAME }}
+            azure-file-volume-mount-path: ${{ secrets.FILESHARE_PATH }}
+            azure-file-volume-share-name: ${{ secrets.FILESHARE_NAME }}
             name: getting-started-github
             location: 'west europe'
             ports: '3000'
